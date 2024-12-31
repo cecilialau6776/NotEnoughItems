@@ -349,7 +349,8 @@ public class ItemPanel extends PanelWidget {
 
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                if (rightclick) return false;
+                if (rightclick)
+                    return false;
 
                 int modifier = NEIClientUtils.controlKey() ? 64 : NEIClientUtils.shiftKey() ? 10 : 1;
                 int quantity = NEIClientConfig.getItemQuantity() + modifier;
@@ -366,7 +367,8 @@ public class ItemPanel extends PanelWidget {
 
             @Override
             public boolean onButtonPress(boolean rightclick) {
-                if (rightclick) return false;
+                if (rightclick)
+                    return false;
 
                 int modifier = NEIClientUtils.controlKey() ? -64 : NEIClientUtils.shiftKey() ? -10 : -1;
                 int quantity = NEIClientConfig.getItemQuantity() + modifier;
@@ -425,6 +427,7 @@ public class ItemPanel extends PanelWidget {
         return marginTop;
     }
 
+    @Override
     protected int resizeFooter(GuiContainer gui) {
         if (!NEIClientConfig.showItemQuantityWidget() && NEIClientConfig.isSearchWidgetCentered()
                 && !NEIClientConfig.showHistoryPanelWidget()) {
@@ -463,6 +466,9 @@ public class ItemPanel extends PanelWidget {
                 historyPanel.y = quantity.y - historyPanel.h - PanelWidget.PADDING;
                 return quantity.h + historyPanel.h + PanelWidget.PADDING * 2;
             } else {
+                // System.out.printf("hp: x: %d, y: %d, h: %d, y: %d\n", historyPanel.x,
+                // historyPanel.w, historyPanel.h,
+                // historyPanel.y);
                 historyPanel.y = y + h - historyPanel.h;
                 return historyPanel.h + PanelWidget.PADDING;
             }

@@ -85,16 +85,20 @@ public class NEIClientConfig {
     // Set of handlers that need to be run in serial
     public static HashSet<String> serialHandlers = new HashSet<>();
 
-    // Set of regexes matching handler ID of handlers that need the hack in GuiRecipe.startHeightHack().
-    // We use regex here so that we can apply the height hack to entire mods with one entry.
+    // Set of regexes matching handler ID of handlers that need the hack in
+    // GuiRecipe.startHeightHack().
+    // We use regex here so that we can apply the height hack to entire mods with
+    // one entry.
     public static HashSet<Pattern> heightHackHandlerRegex = new HashSet<>();
 
     // Set of handler Name or Id of handlers that need hide.
     public static HashSet<String> hiddenHandlers = new HashSet<>();
 
     // Map of handler ID to sort order.
-    // Handlers will be sorted in ascending order, so smaller numbers show up earlier.
-    // Any handler not in the map will be assigned to 0, and negative numbers are fine.
+    // Handlers will be sorted in ascending order, so smaller numbers show up
+    // earlier.
+    // Any handler not in the map will be assigned to 0, and negative numbers are
+    // fine.
     public static HashMap<String, Integer> handlerOrdering = new HashMap<>();
 
     public static final Set<Class<?>> pluginsList = new HashSet<>();
@@ -128,7 +132,8 @@ public class NEIClientConfig {
     public static ItemStackSet bannedBlocks = new ItemStackSet();
 
     static {
-        if (global.config.getTag("checkUpdates").getBooleanValue(true)) CCUpdateChecker.updateCheck("NotEnoughItems");
+        if (global.config.getTag("checkUpdates").getBooleanValue(true))
+            CCUpdateChecker.updateCheck("NotEnoughItems");
         linkOptionList();
         setDefaults();
     }
@@ -331,6 +336,11 @@ public class NEIClientConfig {
         tag.getTag("world.panels.bookmarks.right").getIntValue(0);
         tag.getTag("world.panels.bookmarks.top").getIntValue(0);
         tag.getTag("world.panels.bookmarks.bottom").getIntValue(0);
+
+        tag.getTag("world.panels.bookmark.tabs.left").getIntValue(0);
+        tag.getTag("world.panels.bookmark.tabs.right").getIntValue(0);
+        tag.getTag("world.panels.bookmark.tabs.top").getIntValue(0);
+        tag.getTag("world.panels.bookmark.tabs.bottom").getIntValue(0);
 
         tag.getTag("world.panels.items.left").getIntValue(0);
         tag.getTag("world.panels.items.right").getIntValue(0);
@@ -736,17 +746,21 @@ public class NEIClientConfig {
         ItemPanels.itemPanel.quantity.setText(Integer.toString(getItemQuantity()));
         SubsetWidget.loadHidden();
 
-        if (newWorld && Minecraft.getMinecraft().isSingleplayer()) world.config.getTag("inventory.cheatmode")
-                .setIntValue(NEIClientUtils.mc().playerController.isInCreativeMode() ? 2 : 0);
+        if (newWorld && Minecraft.getMinecraft().isSingleplayer())
+            world.config.getTag("inventory.cheatmode")
+                    .setIntValue(NEIClientUtils.mc().playerController.isInCreativeMode() ? 2 : 0);
 
         NEIInfo.load(ClientUtils.getWorld());
     }
 
     private static void setWorldDefaults() {
         NBTTagCompound nbt = world.nbt;
-        if (!nbt.hasKey("search")) nbt.setString("search", "");
-        if (!nbt.hasKey("quantity")) nbt.setInteger("quantity", 0);
-        if (!nbt.hasKey("validateenchantments")) nbt.setBoolean("validateenchantments", false);
+        if (!nbt.hasKey("search"))
+            nbt.setString("search", "");
+        if (!nbt.hasKey("quantity"))
+            nbt.setInteger("quantity", 0);
+        if (!nbt.hasKey("validateenchantments"))
+            nbt.setBoolean("validateenchantments", false);
 
         world.saveNBT();
     }
@@ -820,11 +834,16 @@ public class NEIClientConfig {
                     RecipeCatalysts.loadCatalystInfo();
                     ItemSorter.loadConfig();
 
-                    // Set pluginNEIConfigLoaded here before posting the NEIConfigsLoadedEvent. This used to be the
-                    // other way around, but apparently if your modpack includes 800 mods the event poster might not
-                    // return in time and cause issues when loading a world for a second time as configLoaded is still
-                    // false. This may cause issues in case one of the event handler calls the (non-thread-safe) NEI
-                    // API. I don't expect any handler to do this, but who knows what modders have come up with...
+                    // Set pluginNEIConfigLoaded here before posting the NEIConfigsLoadedEvent. This
+                    // used to be the
+                    // other way around, but apparently if your modpack includes 800 mods the event
+                    // poster might not
+                    // return in time and cause issues when loading a world for a second time as
+                    // configLoaded is still
+                    // false. This may cause issues in case one of the event handler calls the
+                    // (non-thread-safe) NEI
+                    // API. I don't expect any handler to do this, but who knows what modders have
+                    // come up with...
                     pluginNEIConfigLoaded = true;
                     MinecraftForge.EVENT_BUS.post(new NEIConfigsLoadedEvent());
 
@@ -837,7 +856,8 @@ public class NEIClientConfig {
     }
 
     public static boolean isWorldSpecific(String setting) {
-        if (world == null) return false;
+        if (world == null)
+            return false;
         ConfigTag tag = world.config.getTag(setting, false);
         return tag != null && tag.value != null;
     }
@@ -1063,25 +1083,33 @@ public class NEIClientConfig {
     }
 
     public static boolean canPerformAction(String name) {
-        if (!isEnabled()) return false;
+        if (!isEnabled())
+            return false;
 
-        if (!modePermitsAction(name)) return false;
+        if (!modePermitsAction(name))
+            return false;
 
         String base = NEIActions.base(name);
-        if (hasSMPCounterpart) return permissableActions.contains(base);
+        if (hasSMPCounterpart)
+            return permissableActions.contains(base);
 
-        if (NEIActions.smpRequired(name)) return false;
+        if (NEIActions.smpRequired(name))
+            return false;
 
         String cmd = getStringSetting("command." + base);
         return cmd != null && cmd.startsWith("/");
     }
 
     private static boolean modePermitsAction(String name) {
-        if (getCheatMode() == 0) return false;
-        if (getCheatMode() == 2) return true;
+        if (getCheatMode() == 0)
+            return false;
+        if (getCheatMode() == 2)
+            return true;
 
         String[] actions = getStringArrSetting("inventory.utilities");
-        for (String action : actions) if (action.equalsIgnoreCase(name)) return true;
+        for (String action : actions)
+            if (action.equalsIgnoreCase(name))
+                return true;
 
         return false;
     }
@@ -1096,7 +1124,8 @@ public class NEIClientConfig {
 
     public static void reloadSaves() {
         File saveDir = new File(CommonUtils.getMinecraftDir(), "saves/NEI/local");
-        if (!saveDir.exists()) return;
+        if (!saveDir.exists())
+            return;
 
         List<SaveFormatComparator> saves;
         try {
@@ -1106,9 +1135,11 @@ public class NEIClientConfig {
             return;
         }
         HashSet<String> saveFileNames = new HashSet<>();
-        for (SaveFormatComparator save : saves) saveFileNames.add(save.getFileName());
+        for (SaveFormatComparator save : saves)
+            saveFileNames.add(save.getFileName());
 
         for (File file : saveDir.listFiles())
-            if (file.isDirectory() && !saveFileNames.contains(file.getName())) ObfuscationRun.deleteDir(file, true);
+            if (file.isDirectory() && !saveFileNames.contains(file.getName()))
+                ObfuscationRun.deleteDir(file, true);
     }
 }
