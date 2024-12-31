@@ -1,6 +1,7 @@
 package codechicken.nei;
 
 import static codechicken.lib.gui.GuiDraw.drawRect;
+import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.NEIClientUtils.getGuiContainer;
 
 import org.lwjgl.opengl.GL11;
@@ -29,7 +30,12 @@ public class BookmarkTabPanel extends PanelWidget {
     public void init() {
         super.init();
         grid = new ItemsGrid();
-        newTabLabel = new Label("+", true);
+        newTabLabel = new Label("+", false) {
+            @Override
+            public void draw(int mousex, int mousey) {
+                drawStringC(text, x, y, w, h, colour, false);
+            }
+        };
     }
 
     @Override
@@ -106,15 +112,17 @@ public class BookmarkTabPanel extends PanelWidget {
     protected int resizeFooter(GuiContainer gui) {
         final int BUTTON_SIZE = 16;
 
+        BookmarkPanel bp = LayoutManager.bookmarkPanel;
+
         final ButtonCycled button = LayoutManager.bookmarksButton;
-        final int leftBorder = button.x + button.w + PADDING;
-        final int rightBorder = x + w;
+        final int leftBorder = bp.y + bp.h > button.y ? button.x + button.w + 2 : bp.x;
+        final int rightBorder = bp.x + bp.w;
         final int center = leftBorder + Math.max(0, (rightBorder - leftBorder) / 2);
-        int labelWidth = 2;
+        int labelWidth;
 
         pagePrev.h = pageNext.h = BUTTON_SIZE;
         pagePrev.w = pageNext.w = BUTTON_SIZE;
-        pagePrev.y = pageNext.y = y + h + PADDING;
+        pagePrev.y = pageNext.y = bp.y + bp.h - BUTTON_SIZE;
 
         if (rightBorder - leftBorder >= 70) {
             labelWidth = 36;
@@ -127,10 +135,14 @@ public class BookmarkTabPanel extends PanelWidget {
         pageLabel.y = pagePrev.y + 5;
         pageLabel.x = center;
 
-        pagePrev.x = center - labelWidth / 2 - 2 - pagePrev.w;
-        pageNext.x = center + labelWidth / 2 + 2;
-        // pullBookmarkedItems.x = center + 2 * labelWidth / 2 + 2;
-        // System.out.printf("tp: x: %d, w: %d, h: %d, y: %d\n", x, w, h, y);
+        pagePrev.x = center - labelWidth / 2 - PADDING - pagePrev.w;
+        pageNext.x = center + labelWidth / 2 + PADDING;
+
+        bp.pullBookmarkedItems.h = BUTTON_SIZE;
+        bp.pullBookmarkedItems.w = BUTTON_SIZE;
+        bp.pullBookmarkedItems.y = bp.y + bp.h - BUTTON_SIZE;
+        bp.pullBookmarkedItems.x = center + 2 * labelWidth / 2 + 2;
+
         return BUTTON_SIZE + PADDING;
     }
 
@@ -197,7 +209,7 @@ public class BookmarkTabPanel extends PanelWidget {
         }
 
         // place new tab label
-        final Rectangle4i labelRect = grid.getSlotRect(grid.size() + 1);
+        final Rectangle4i labelRect = grid.getSlotRect(grid.size());
         newTabLabel.x = labelRect.x;
         newTabLabel.y = labelRect.y;
         newTabLabel.w = labelRect.w;

@@ -2000,13 +2000,6 @@ public class BookmarkPanel extends PanelWidget {
         final ButtonCycled button = LayoutManager.bookmarksButton;
         final int leftBorder = y + h > button.y ? button.x + button.w + 2 : x;
         final int rightBorder = x + w;
-        final int center = leftBorder + Math.max(0, (rightBorder - leftBorder) / 2);
-        int labelWidth = 2;
-
-        pullBookmarkedItems.h = BUTTON_SIZE;
-        pullBookmarkedItems.w = BUTTON_SIZE;
-        pullBookmarkedItems.y = y + h - BUTTON_SIZE;
-        pullBookmarkedItems.x = center + 2 * labelWidth / 2 + 2;
 
         tabPanel.x = x;
         tabPanel.w = w;
