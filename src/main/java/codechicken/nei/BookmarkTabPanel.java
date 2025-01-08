@@ -4,13 +4,32 @@ import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.NEIClientUtils.getGuiContainer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.BookmarkPanel.BookmarkGrid;
+import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.recipe.StackInfo;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class BookmarkTabPanel extends PanelWidget {
+
+    protected static class TabPanelGrid extends ItemsGrid {
+        @Override
+        public int getNumPages() {
+            if (perPage > 0) {
+                return (int) Math.ceil((float) (realItems.size() + 1) / (float) perPage);
+            }
+
+            return 0;
+        }
+    }
 
     protected Label newTabLabel;
 
@@ -20,22 +39,91 @@ public class BookmarkTabPanel extends PanelWidget {
     protected String getNamespaceLabelText(boolean shortFormat) {
         String activePage = String.valueOf(getPage());
 
-        // TODO: write fixCountOfNamespaces
-        // return shortFormat ? activePage : (activePage + "/" +
-        // fixCountOfNamespaces());
-        return shortFormat ? activePage : (activePage + "/" + 0);
+        return shortFormat ? activePage : getLabelText();
+    }
+
+    public void addTab(ItemStack stack) {
+        List<BookmarkGrid> namespaces = ItemPanels.bookmarkPanel.namespaces;
+        namespaces.add(new BookmarkGrid());
+        ItemPanels.bookmarkPanel.setNamespace(namespaces.size() - 1);
+        grid.realItems.add(stack);
+        grid.onItemsChanged();
     }
 
     @Override
     public void init() {
         super.init();
-        grid = new ItemsGrid();
+        // grid = new TabPanelGrid();
+        grid = new TabPanelGrid();
         newTabLabel = new Label("+", false) {
             @Override
             public void draw(int mousex, int mousey) {
                 drawStringC(text, x, y, w, h, colour, false);
             }
+
+            @Override
+            public List<String> handleTooltip(int mx, int my, List<String> tooltip) {
+                if (!contains(mx, my))
+                    return tooltip;
+
+                tooltip.add("New Tab");
+                return tooltip;
+            }
+
+            @Override
+            public boolean handleClick(int mx, int my, int button) {
+                // Default item
+                ItemStack is = new ItemStack(Item.getItemById(1));
+                addTab(is);
+                return true;
+            }
         };
+
+        ItemStack is = new ItemStack(Item.getItemById(1));
+        addTab(is);
+    }
+
+    @Override
+    public void mouseUp(int mousex, int mousey, int button) {
+        setTabIcon(mousex, mousey);
+
+        // switch tab
+        ItemPanelSlot hoverSlot = getSlotMouseOver(mousex, mousey);
+        if (hoverSlot != null && hoverSlot.slotIndex == mouseDownSlot) {
+            int tabIndex = hoverSlot.slotIndex;
+            System.out.println("ti: " + tabIndex);
+            ItemPanels.bookmarkPanel.setNamespace(tabIndex);
+            // return true;
+        }
+    }
+
+    protected boolean setTabIcon(int mousex, int mousey) {
+        ItemPanelSlot hoverSlot = getSlotMouseOver(mousex, mousey);
+        ItemStack draggedItem;
+        if (ItemPanels.itemPanel.draggedStack != null) {
+            draggedItem = ItemPanels.itemPanel.draggedStack;
+        } else {
+            draggedItem = ItemPanels.bookmarkPanel.draggedStack;
+        }
+
+        if (draggedItem != null) {
+            final ItemStack draggedStack = draggedItem.copy();
+            final NBTTagCompound nbTag = StackInfo.itemStackToNBT(draggedStack);
+            final ItemStack normalized = StackInfo.loadFromNBT(nbTag, 0);
+            if (hoverSlot != null) {
+                grid.getItems().set(hoverSlot.slotIndex, normalized);
+                ItemPanels.itemPanel.draggedStack = null;
+                ItemPanels.bookmarkPanel.draggedStack = null;
+                return true;
+            } else if (newTabLabel.contains(mousex, mousey)) {
+                addTab(normalized);
+                ItemPanels.itemPanel.draggedStack = null;
+                ItemPanels.bookmarkPanel.draggedStack = null;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -143,7 +231,8 @@ public class BookmarkTabPanel extends PanelWidget {
         bp.pullBookmarkedItems.y = bp.y + bp.h - BUTTON_SIZE;
         bp.pullBookmarkedItems.x = center + 2 * labelWidth / 2 + 2;
 
-        return BUTTON_SIZE + PADDING;
+        return 0;
+        // return BUTTON_SIZE + PADDING;
     }
 
     @Override
@@ -151,7 +240,8 @@ public class BookmarkTabPanel extends PanelWidget {
         LayoutManager.addWidget(pagePrev);
         LayoutManager.addWidget(pageNext);
         LayoutManager.addWidget(pageLabel);
-        LayoutManager.addWidget(newTabLabel);
+        if (isNewTabLabelVisible())
+            LayoutManager.addWidget(newTabLabel);
         grid.setVisible();
     }
 
@@ -198,6 +288,26 @@ public class BookmarkTabPanel extends PanelWidget {
         GL11.glPopMatrix();
     }
 
+    private boolean isNewTabLabelVisible() {
+        return !(grid.getNumPages() > 0 && grid.getPage() != grid.getNumPages());
+    }
+
+    private void drawNewTabLabel(int mousex, int mousey) {
+        if (!isNewTabLabelVisible()) {
+            return;
+        }
+        final Rectangle4i labelRect = grid.getSlotRect(grid.size() - grid.page * grid.getPerPage());
+        if (labelRect.contains(mousex, mousey)) {
+            // draw hover highlight
+            drawRect(labelRect.x, labelRect.y, labelRect.w, labelRect.h, 0xee555555);
+        }
+
+        newTabLabel.x = labelRect.x;
+        newTabLabel.y = labelRect.y;
+        newTabLabel.w = labelRect.w;
+        newTabLabel.h = labelRect.h;
+    }
+
     @Override
     public void draw(int mousex, int mousey) {
         super.draw(mousex, mousey);
@@ -208,11 +318,6 @@ public class BookmarkTabPanel extends PanelWidget {
             drawSplittingArea(x, y, w, h, NEIClientConfig.getSetting("inventory.history.historyColor").getHexValue());
         }
 
-        // place new tab label
-        final Rectangle4i labelRect = grid.getSlotRect(grid.size());
-        newTabLabel.x = labelRect.x;
-        newTabLabel.y = labelRect.y;
-        newTabLabel.w = labelRect.w;
-        newTabLabel.h = labelRect.h;
+        drawNewTabLabel(mousex, mousey);
     }
 }

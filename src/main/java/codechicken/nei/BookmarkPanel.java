@@ -1516,7 +1516,7 @@ public class BookmarkPanel extends PanelWidget {
             }
         }
 
-        fixCountOfNamespaces();
+        // fixCountOfNamespaces();
     }
 
     public void addRecipe(BookmarkRecipe recipe, boolean saveSize) {
@@ -1565,7 +1565,7 @@ public class BookmarkPanel extends PanelWidget {
             BGrid.addItem(normalized, metadata);
         }
 
-        fixCountOfNamespaces();
+        // fixCountOfNamespaces();
     }
 
     public void addBookmarkGroup(List<ItemStack> items, BookmarkViewMode viewMode) {
@@ -1601,7 +1601,7 @@ public class BookmarkPanel extends PanelWidget {
             addRecipe(recipe, true, groupId);
         }
 
-        fixCountOfNamespaces();
+        // fixCountOfNamespaces();
     }
 
     public BookmarkRecipeId getBookmarkRecipeId(int slotIndex) {
@@ -1655,71 +1655,67 @@ public class BookmarkPanel extends PanelWidget {
         }
     }
 
-    protected String getNamespaceLabelText(boolean shortFormat) {
-        String activePage = String.valueOf(activeNamespaceIndex + 1);
+    // protected int fixCountOfNamespaces() {
 
-        return shortFormat ? activePage : (activePage + "/" + fixCountOfNamespaces());
-    }
+    // if (namespaces.get(getNamespaceSize() - 1).size() > 0) {
+    // namespaces.add(new BookmarkGrid());
+    // } else if (activeNamespaceIndex == getNamespaceSize() - 2 && grid.size() ==
+    // 0) {
+    // namespaces.remove(getNamespaceSize() - 1);
+    // }
 
-    protected int fixCountOfNamespaces() {
+    // return getNamespaceSize();
+    // }
 
-        if (namespaces.get(getNamespaceSize() - 1).size() > 0) {
-            namespaces.add(new BookmarkGrid());
-        } else if (activeNamespaceIndex == getNamespaceSize() - 2 && grid.size() == 0) {
-            namespaces.remove(getNamespaceSize() - 1);
-        }
+    // protected boolean removeEmptyNamespaces() {
 
-        return getNamespaceSize();
-    }
+    // if (activeNamespaceIndex != getNamespaceSize() - 1 && grid.size() == 0) {
+    // namespaces.remove(activeNamespaceIndex);
+    // setNamespace(activeNamespaceIndex);
+    // return true;
+    // }
 
-    protected boolean removeEmptyNamespaces() {
+    // return false;
+    // }
 
-        if (activeNamespaceIndex != getNamespaceSize() - 1 && grid.size() == 0) {
-            namespaces.remove(activeNamespaceIndex);
-            setNamespace(activeNamespaceIndex);
-            return true;
-        }
+    // protected boolean prevNamespace() {
+    // if (bookmarksState != BookmarkLoadingState.LOADED) {
+    // return false;
+    // }
 
-        return false;
-    }
+    // fixCountOfNamespaces();
+    // removeEmptyNamespaces();
 
-    protected boolean prevNamespace() {
-        if (bookmarksState != BookmarkLoadingState.LOADED) {
-            return false;
-        }
+    // if (activeNamespaceIndex == 0) {
+    // setNamespace(getNamespaceSize() - 1);
+    // } else {
+    // setNamespace(activeNamespaceIndex - 1);
+    // }
 
-        fixCountOfNamespaces();
-        removeEmptyNamespaces();
+    // return true;
+    // }
 
-        if (activeNamespaceIndex == 0) {
-            setNamespace(getNamespaceSize() - 1);
-        } else {
-            setNamespace(activeNamespaceIndex - 1);
-        }
+    // protected boolean nextNamespace() {
+    // if (bookmarksState != BookmarkLoadingState.LOADED) {
+    // return false;
+    // }
 
-        return true;
-    }
+    // if (removeEmptyNamespaces()) {
+    // return true;
+    // }
 
-    protected boolean nextNamespace() {
-        if (bookmarksState != BookmarkLoadingState.LOADED) {
-            return false;
-        }
+    // if (activeNamespaceIndex == fixCountOfNamespaces() - 1) {
+    // setNamespace(0);
+    // } else {
+    // setNamespace(activeNamespaceIndex + 1);
+    // }
 
-        if (removeEmptyNamespaces()) {
-            return true;
-        }
-
-        if (activeNamespaceIndex == fixCountOfNamespaces() - 1) {
-            setNamespace(0);
-        } else {
-            setNamespace(activeNamespaceIndex + 1);
-        }
-
-        return true;
-    }
+    // return true;
+    // }
 
     protected void setNamespace(int namespaceIndex) {
         activeNamespaceIndex = Math.min(namespaceIndex, namespaces.size() - 1);
+        System.out.println(activeNamespaceIndex);
         grid = namespaces.get(activeNamespaceIndex);
 
         if (grid.size() == 0 && activeNamespaceIndex > 0) {
@@ -2003,7 +1999,7 @@ public class BookmarkPanel extends PanelWidget {
 
         tabPanel.x = x;
         tabPanel.w = w;
-        tabPanel.h = ItemsGrid.SLOT_SIZE;
+        tabPanel.h = ItemsGrid.SLOT_SIZE * 2;
         tabPanel.y = button.y - tabPanel.h - PADDING;
         // System.out.printf("bp: x: %d, w: %d, h: %d, y: %d\n", x, w, h, y);
         // System.out.printf("bptp: x: %d, w: %d, h: %d, y: %d\n", tabPanel.x,
@@ -2265,6 +2261,12 @@ public class BookmarkPanel extends PanelWidget {
         }
 
         return -1;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        tabPanel.update();
     }
 
     @Override

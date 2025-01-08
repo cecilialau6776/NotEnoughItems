@@ -250,12 +250,20 @@ public abstract class PanelWidget extends Widget implements IContainerTooltipHan
             return true;
         }
 
+        if (ItemPanels.bookmarkPanel.tabPanel.setTabIcon(mouseX, mouseY)) {
+            return true;
+        }
+
         if (ItemPanels.itemPanel.draggedStack != null) {
             return ItemPanels.itemPanel.handleDraggedClick(mouseX, mouseY, button);
         }
 
         if (ItemPanels.bookmarkPanel.draggedStack != null) {
             return ItemPanels.bookmarkPanel.handleDraggedClick(mouseX, mouseY, button);
+        }
+
+        if (ItemPanels.bookmarkPanel.tabPanel.draggedStack != null) {
+            return ItemPanels.bookmarkPanel.tabPanel.handleDraggedClick(mouseX, mouseY, button);
         }
 
         if (NEIClientUtils.getHeldItem() != null) {
