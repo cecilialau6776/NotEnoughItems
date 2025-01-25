@@ -33,6 +33,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -51,6 +52,7 @@ import codechicken.core.CommonUtils;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.lib.gui.GuiDraw.ITooltipLineHandler;
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.BookmarkTabPanel.TabPanelGrid;
 import codechicken.nei.ItemPanel.ItemPanelSlot;
 import codechicken.nei.api.IBookmarkContainerHandler;
 import codechicken.nei.guihook.GuiContainerManager;
@@ -1715,7 +1717,7 @@ public class BookmarkPanel extends PanelWidget {
 
     protected void setNamespace(int namespaceIndex) {
         activeNamespaceIndex = Math.min(namespaceIndex, namespaces.size() - 1);
-        System.out.println(activeNamespaceIndex);
+        // System.out.println(activeNamespaceIndex);
         grid = namespaces.get(activeNamespaceIndex);
 
         if (grid.size() == 0 && activeNamespaceIndex > 0) {
@@ -1779,8 +1781,8 @@ public class BookmarkPanel extends PanelWidget {
         List<String> strings = new ArrayList<>();
         NBTTagCompound navigation = new NBTTagCompound();
         navigation.setInteger("namespaceIndex", activeNamespaceIndex);
-
-        for (int grpIdx = 0; grpIdx < getNamespaceSize() - 1; grpIdx++) {
+        System.out.println("chom: " + getNamespaceSize());
+        for (int grpIdx = 0; grpIdx < getNamespaceSize(); grpIdx++) {
             BookmarkGrid grid = namespaces.get(grpIdx);
             JsonObject settings = new JsonObject();
             JsonObject groups = new JsonObject();
@@ -1793,7 +1795,12 @@ public class BookmarkPanel extends PanelWidget {
                 groups.add(String.valueOf(groupId), groupJson);
             }
 
+            JsonObject tab = new JsonObject();
+            ItemStack tabItem = tabPanel.grid.getItem(grpIdx);
+            tab.add("itemstackItemId", new JsonPrimitive(Item.getIdFromItem(tabItem.getItem())));
+
             settings.add("groups", groups);
+            settings.add("tab", tab);
             strings.add("; " + NBTJson.toJson(settings));
 
             navigation.setInteger("namespacePage." + grpIdx, grid.page);
@@ -1845,6 +1852,9 @@ public class BookmarkPanel extends PanelWidget {
         bookmarksState = BookmarkLoadingState.LOADING;
 
         if (bookmarkFile == null || !bookmarkFile.exists()) {
+            ItemStack is = new ItemStack(Item.getItemById(1));
+            tabPanel.grid.realItems.add(is);
+            tabPanel.grid.onItemsChanged();
             bookmarksState = BookmarkLoadingState.LOADED;
             return;
         }
@@ -1860,6 +1870,7 @@ public class BookmarkPanel extends PanelWidget {
 
         final JsonParser parser = new JsonParser();
         final List<BookmarkGrid> namespaces = new ArrayList<>();
+        final TabPanelGrid tabPanelGrid = new TabPanelGrid();
         NBTTagCompound navigation = new NBTTagCompound();
         namespaces.add(new BookmarkGrid());
         BookmarkGrid grid = namespaces.get(0);
@@ -1888,6 +1899,12 @@ public class BookmarkPanel extends PanelWidget {
 
                     if (navigation.hasKey("namespacePage." + (namespaces.size() - 1))) {
                         grid.page = navigation.getInteger("namespacePage." + (namespaces.size() - 1));
+                    }
+
+                    if (settings.get("tab") != null) {
+                        int id = settings.get("tab").getAsJsonObject().get("itemstackItemId").getAsInt();
+                        ItemStack is = new ItemStack(Item.getItemById(id));
+                        tabPanelGrid.realItems.add(is);
                     }
 
                     if (settings.get("viewmode") != null) {
@@ -1958,6 +1975,23 @@ public class BookmarkPanel extends PanelWidget {
         }
 
         this.namespaces = namespaces;
+
+        if (namespaces.size() == 0) {
+            ItemStack is = new ItemStack(Item.getItemById(1));
+            tabPanel.grid.realItems.add(is);
+            tabPanel.grid.onItemsChanged();
+        } else if (namespaces.size() != tabPanel.grid.size()) {
+            if (namespaces.size() > tabPanel.grid.size()) {
+                ItemStack is = new ItemStack(Item.getItemById(1));
+                for (int i = 0; i < namespaces.size() - tabPanel.grid.size(); i++) {
+                    tabPanel.grid.realItems.add(is);
+                    tabPanel.grid.onItemsChanged();
+                }
+            }
+        }
+        tabPanelGrid.onItemsChanged();
+        this.tabPanel.grid = tabPanelGrid;
+
         bookmarksState = BookmarkLoadingState.LOADED;
 
         if (navigation.hasKey("namespaceIndex")) {

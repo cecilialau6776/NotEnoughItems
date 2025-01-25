@@ -42,6 +42,11 @@ public class BookmarkTabPanel extends PanelWidget {
         return shortFormat ? activePage : getLabelText();
     }
 
+    public void addTab() {
+        ItemStack is = new ItemStack(Item.getItemById(1));
+        addTab(is);
+    }
+
     public void addTab(ItemStack stack) {
         List<BookmarkGrid> namespaces = ItemPanels.bookmarkPanel.namespaces;
         namespaces.add(new BookmarkGrid());
@@ -53,7 +58,6 @@ public class BookmarkTabPanel extends PanelWidget {
     @Override
     public void init() {
         super.init();
-        // grid = new TabPanelGrid();
         grid = new TabPanelGrid();
         newTabLabel = new Label("+", false) {
             @Override
@@ -72,15 +76,13 @@ public class BookmarkTabPanel extends PanelWidget {
 
             @Override
             public boolean handleClick(int mx, int my, int button) {
-                // Default item
-                ItemStack is = new ItemStack(Item.getItemById(1));
-                addTab(is);
+                addTab();
                 return true;
             }
         };
 
-        ItemStack is = new ItemStack(Item.getItemById(1));
-        addTab(is);
+        // ItemStack is = new ItemStack(Item.getItemById(1));
+        // addTab(is);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class BookmarkTabPanel extends PanelWidget {
         ItemPanelSlot hoverSlot = getSlotMouseOver(mousex, mousey);
         if (hoverSlot != null && hoverSlot.slotIndex == mouseDownSlot) {
             int tabIndex = hoverSlot.slotIndex;
-            System.out.println("ti: " + tabIndex);
+            // System.out.println("ti: " + tabIndex);
             ItemPanels.bookmarkPanel.setNamespace(tabIndex);
             // return true;
         }
@@ -308,8 +310,28 @@ public class BookmarkTabPanel extends PanelWidget {
         newTabLabel.h = labelRect.h;
     }
 
+    private void drawActiveTabBackground() {
+        // check if the tab is visible
+        BookmarkPanel bp = LayoutManager.bookmarkPanel;
+        final int perTabPage = this.grid.getPerPage();
+        // System.out.printf("%d, %d, %d, %d\n", (bp.getPage() - 1),
+        // bp.activeNamespaceIndex / perTabPage,
+        // bp.activeNamespaceIndex,
+        // bp.namespaces.size());
+        if ((bp.getPage() - 1) != bp.activeNamespaceIndex / perTabPage)
+            return;
+        // get index of the active tab on the page
+        final int index = bp.activeNamespaceIndex - ((bp.activeNamespaceIndex / perTabPage) * perTabPage);
+
+        final Rectangle4i labelRect = grid.getSlotRect(index);
+        drawRect(labelRect.x, labelRect.y, labelRect.w, labelRect.h, 0xee888888);
+    }
+
     @Override
     public void draw(int mousex, int mousey) {
+        // draw background for active tab
+        drawActiveTabBackground();
+
         super.draw(mousex, mousey);
         // draw border/background
         if (NEIClientConfig.getIntSetting("inventory.history.splittingMode") == 0) {
