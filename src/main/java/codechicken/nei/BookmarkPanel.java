@@ -2033,7 +2033,7 @@ public class BookmarkPanel extends PanelWidget {
 
         tabPanel.x = x;
         tabPanel.w = w;
-        tabPanel.h = ItemsGrid.SLOT_SIZE * 2;
+        tabPanel.h = ItemsGrid.SLOT_SIZE * NEIClientConfig.getIntSetting("inventory.bookmarks.useRows");
         tabPanel.y = button.y - tabPanel.h - PADDING;
         // System.out.printf("bp: x: %d, w: %d, h: %d, y: %d\n", x, w, h, y);
         // System.out.printf("bptp: x: %d, w: %d, h: %d, y: %d\n", tabPanel.x,

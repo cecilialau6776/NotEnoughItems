@@ -176,6 +176,10 @@ public class NEIClientConfig {
         tag.getTag("inventory.bookmarks.enabled").setComment("Enable/Disable Bookmark Panel").getBooleanValue(true);
         API.addOption(new OptionToggleButton("inventory.bookmarks.enabled", true));
 
+        tag.getTag("inventory.bookmarks.tabColor").setComment("Color of the tab area display")
+                .getHexValue(0xee555555);
+        API.addOption(new OptionIntegerField("inventory.bookmarks.tabColor", 0, OptionIntegerField.UNSIGNED_INT_MAX));
+
         tag.getTag("inventory.bookmarks.worldSpecific").setComment("Global or world specific bookmarks")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.bookmarks.worldSpecific", true) {
@@ -205,6 +209,12 @@ public class NEIClientConfig {
         tag.getTag("inventory.bookmarks.ignorePotionOverlap").setComment("Ignore overlap with potion effect HUD")
                 .getBooleanValue(false);
         API.addOption(new OptionToggleButton("inventory.bookmarks.ignorePotionOverlap", true));
+        tag.getTag("inventory.bookmarks.useRows").setComment("Rows used for tabs").getIntValue(2);
+        API.addOption(new OptionIntegerField("inventory.bookmarks.useRows", 1, 5));
+
+        tag.getTag("inventory.bookmarks.splittingMode").setComment("The separator style between tabs and bookmarks")
+                .getIntValue(1);
+        API.addOption(new OptionCycled("inventory.bookmarks.splittingMode", 2, true));
 
         tag.getTag("inventory.guirecipe.jeiStyleTabs").setComment("Enable/disable JEI Style Tabs")
                 .getBooleanValue(true);

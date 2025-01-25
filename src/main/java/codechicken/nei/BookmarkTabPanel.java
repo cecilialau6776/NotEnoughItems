@@ -334,10 +334,10 @@ public class BookmarkTabPanel extends PanelWidget {
 
         super.draw(mousex, mousey);
         // draw border/background
-        if (NEIClientConfig.getIntSetting("inventory.history.splittingMode") == 0) {
-            drawRect(x, y, w, h, NEIClientConfig.getSetting("inventory.history.historyColor").getHexValue());
+        if (NEIClientConfig.getIntSetting("inventory.bookmarks.splittingMode") == 0) {
+            drawRect(x, y, w, h, NEIClientConfig.getSetting("inventory.bookmarks.tabColor").getHexValue());
         } else {
-            drawSplittingArea(x, y, w, h, NEIClientConfig.getSetting("inventory.history.historyColor").getHexValue());
+            drawSplittingArea(x, y, w, h, NEIClientConfig.getSetting("inventory.bookmarks.tabColor").getHexValue());
         }
 
         drawNewTabLabel(mousex, mousey);
