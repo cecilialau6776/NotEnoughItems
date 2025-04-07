@@ -3,17 +3,33 @@ package codechicken.nei;
 import static codechicken.lib.gui.GuiDraw.drawRect;
 import static codechicken.lib.gui.GuiDraw.drawStringC;
 import static codechicken.nei.NEIClientUtils.getGuiContainer;
+import static codechicken.nei.NEIClientUtils.translate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Dimension;
 
+import codechicken.core.gui.GuiScreenWidget;
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.AutoFocusWidget.INEIAutoFocusSearchEnable;
 import codechicken.nei.BookmarkPanel.BookmarkGrid;
 import codechicken.nei.ItemPanel.ItemPanelSlot;
+import codechicken.nei.api.INEIGuiHandler;
+import codechicken.nei.api.TaggedInventoryArea;
+import codechicken.nei.drawable.DrawableBuilder;
+import codechicken.nei.drawable.DrawableResource;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IGuiClientSide;
 import codechicken.nei.recipe.StackInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.texture.Stitcher.Slot;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,9 +48,6 @@ public class BookmarkTabPanel extends PanelWidget {
     }
 
     protected Label newTabLabel;
-
-    // public BookmarkTabPanel() {
-    // }
 
     protected String getNamespaceLabelText(boolean shortFormat) {
         String activePage = String.valueOf(getPage());
@@ -91,11 +104,16 @@ public class BookmarkTabPanel extends PanelWidget {
 
         // switch tab
         ItemPanelSlot hoverSlot = getSlotMouseOver(mousex, mousey);
-        if (hoverSlot != null && hoverSlot.slotIndex == mouseDownSlot) {
+        if (hoverSlot != null && button == 0 && hoverSlot.slotIndex == mouseDownSlot) {
             int tabIndex = hoverSlot.slotIndex;
             // System.out.println("ti: " + tabIndex);
             ItemPanels.bookmarkPanel.setNamespace(tabIndex);
             // return true;
+        }
+        if (hoverSlot != null && button == 0 && NEIClientUtils.shiftKey() && hoverSlot.slotIndex == mouseDownSlot) {
+            GuiScreen gs = new GuiTabEditor(NEIClientUtils.mc().currentScreen);
+            Minecraft mc = Minecraft.getMinecraft();
+            mc.displayGuiScreen(gs);
         }
     }
 

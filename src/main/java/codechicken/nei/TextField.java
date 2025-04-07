@@ -46,7 +46,8 @@ public abstract class TextField extends Widget {
             setDimensionsAndColor();
             field.drawTextBox();
         } catch (NullPointerException npe) {
-            // Hack to deal with a null font renderer... recreate the field and it should work
+            // Hack to deal with a null font renderer... recreate the field and it should
+            // work
             GuiTextField oldField = field;
 
             initInternalTextField();
@@ -59,22 +60,26 @@ public abstract class TextField extends Widget {
 
     @Override
     public void onGuiClick(int mousex, int mousey) {
-        if (!contains(mousex, mousey)) setFocus(false);
+        if (!contains(mousex, mousey))
+            setFocus(false);
     }
 
     @Override
     public boolean handleClick(int mousex, int mousey, int button) {
         setFocus(true);
 
-        if (button == 1) setText("");
-        else field.mouseClicked(mousex, mousey, button);
+        if (button == 1)
+            setText("");
+        else
+            field.mouseClicked(mousex, mousey, button);
 
         return true;
     }
 
     @Override
     public boolean handleKeyPress(int keyID, char keyChar) {
-        if (!focused()) return false;
+        if (!focused())
+            return false;
 
         String oldText = text();
         boolean handled = field.textboxKeyTyped(keyChar, keyID);
@@ -95,7 +100,8 @@ public abstract class TextField extends Widget {
     public abstract void onTextChange(String oldText);
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     public void setText(String s) {
         String oldText = text();

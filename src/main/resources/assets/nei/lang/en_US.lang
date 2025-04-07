@@ -32,6 +32,9 @@ nei.bookmark.crafting_chain.input=Ingredients
 nei.bookmark.crafting_chain.output=Results
 nei.bookmark.crafting_chain.remainder=Remainders
 
+nei.bookmark.tab.cancel=Cancel
+nei.bookmark.tab.confirm=Confirm
+
 nei.itempanel.quantity.default=One stack
 nei.itempanel.loading=Loading Item List...
 nei.itempanel.deleteItem=Delete Item

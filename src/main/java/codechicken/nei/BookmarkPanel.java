@@ -1518,7 +1518,6 @@ public class BookmarkPanel extends PanelWidget {
             }
         }
 
-        // fixCountOfNamespaces();
     }
 
     public void addRecipe(BookmarkRecipe recipe, boolean saveSize) {
@@ -1567,7 +1566,6 @@ public class BookmarkPanel extends PanelWidget {
             BGrid.addItem(normalized, metadata);
         }
 
-        // fixCountOfNamespaces();
     }
 
     public void addBookmarkGroup(List<ItemStack> items, BookmarkViewMode viewMode) {
@@ -1603,7 +1601,6 @@ public class BookmarkPanel extends PanelWidget {
             addRecipe(recipe, true, groupId);
         }
 
-        // fixCountOfNamespaces();
     }
 
     public BookmarkRecipeId getBookmarkRecipeId(int slotIndex) {
@@ -1656,64 +1653,6 @@ public class BookmarkPanel extends PanelWidget {
             BGrid.removeGroup(groupId);
         }
     }
-
-    // protected int fixCountOfNamespaces() {
-
-    // if (namespaces.get(getNamespaceSize() - 1).size() > 0) {
-    // namespaces.add(new BookmarkGrid());
-    // } else if (activeNamespaceIndex == getNamespaceSize() - 2 && grid.size() ==
-    // 0) {
-    // namespaces.remove(getNamespaceSize() - 1);
-    // }
-
-    // return getNamespaceSize();
-    // }
-
-    // protected boolean removeEmptyNamespaces() {
-
-    // if (activeNamespaceIndex != getNamespaceSize() - 1 && grid.size() == 0) {
-    // namespaces.remove(activeNamespaceIndex);
-    // setNamespace(activeNamespaceIndex);
-    // return true;
-    // }
-
-    // return false;
-    // }
-
-    // protected boolean prevNamespace() {
-    // if (bookmarksState != BookmarkLoadingState.LOADED) {
-    // return false;
-    // }
-
-    // fixCountOfNamespaces();
-    // removeEmptyNamespaces();
-
-    // if (activeNamespaceIndex == 0) {
-    // setNamespace(getNamespaceSize() - 1);
-    // } else {
-    // setNamespace(activeNamespaceIndex - 1);
-    // }
-
-    // return true;
-    // }
-
-    // protected boolean nextNamespace() {
-    // if (bookmarksState != BookmarkLoadingState.LOADED) {
-    // return false;
-    // }
-
-    // if (removeEmptyNamespaces()) {
-    // return true;
-    // }
-
-    // if (activeNamespaceIndex == fixCountOfNamespaces() - 1) {
-    // setNamespace(0);
-    // } else {
-    // setNamespace(activeNamespaceIndex + 1);
-    // }
-
-    // return true;
-    // }
 
     protected void setNamespace(int namespaceIndex) {
         activeNamespaceIndex = Math.min(namespaceIndex, namespaces.size() - 1);
